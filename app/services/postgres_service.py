@@ -39,3 +39,19 @@ def insert_cleaned_log(incident_id, timestamp, appName, serviceName, job, label,
     conn.commit()
     cur.close()
     conn.close()
+    
+def fetch_alerts(limit: int = 10):
+    """Fetch list of alerts with pagination."""
+    conn = get_pg_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("""
+        SELECT id as incident_id, appName, serviceName, job, label, level, message,
+               kubernetesDetails, date, time
+        FROM cleaned_logs
+        ORDER BY date DESC, time DESC
+        LIMIT %s
+    """, (limit,))
+    alerts = cur.fetchall()
+    cur.close()
+    conn.close()
+    return alerts
