@@ -14,9 +14,17 @@ def deduplicate_alert(alert: AlertRequest):
     return process_alert(alert.model_dump())
 
 @router.get("/alerts", response_model=List[Dict])
-def list_alerts(limit: int = Query(10, gt=0)):
+def list_alerts():
     """
     List all alerts from cleaned_logs with optional pagination.
     """
-    alerts = fetch_alerts(limit=limit)
+    alerts = fetch_alerts()
     return alerts
+
+@router.get("/alerts/grouped")
+def get_grouped_alerts():
+    """
+    Return alerts grouped by incident_id, including duplicates.
+    """
+    grouped = fetch_grouped_alerts()
+    return grouped

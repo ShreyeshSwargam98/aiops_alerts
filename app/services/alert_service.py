@@ -1,7 +1,7 @@
-import uuid
 from datetime import datetime, timezone
-from app.services.postgres_service import insert_cleaned_log
-from app.services.vector_service import *
+import uuid
+from app.services.postgres_service import insert_cleaned_log, insert_duplicate_log
+from app.services.vector_service import get_embedding, weaviate_search, weaviate_store
 
 SIMILARITY_THRESHOLD = 0.85
 
@@ -17,46 +17,42 @@ def process_alert(alert: dict):
     ])
 
     vector = get_embedding(alert_text)
+    timestamp = datetime.now(timezone.utc)
+
     if not vector:
-        print("Skipping Weaviate search, empty vector")
+        # Embedding failed → treat as unique
         new_incident_id = str(uuid.uuid4())[:8]
-        timestamp = datetime.now(timezone.utc)
-        insert_cleaned_log(
-            incident_id=new_incident_id,
-            timestamp=timestamp,
-            **alert
-        )
+        insert_cleaned_log(incident_id=new_incident_id, timestamp=timestamp, **alert)
         return {
-            "status": "new",
-            "incident_id": new_incident_id,
-            "similarity": None
+            "status": "unique",
+            "message": "Alert stored in cleaned_logs (embedding failed).",
+            "incident_id": new_incident_id
         }
 
-    matches = weaviate_search(vector)
+    # Search for duplicates
+    matches = weaviate_search(vector, limit=1)
     if matches:
-        best_match = matches[0]
-        if best_match.get("similarity", 0) >= SIMILARITY_THRESHOLD:
-            # Duplicate found
+        top_match = matches[0]
+        similarity = top_match.get("similarity", 0)
+        original_incident_id = top_match.get("incident_id")
+
+        if similarity >= SIMILARITY_THRESHOLD and original_incident_id:
+            # Duplicate found → store in duplicate_logs
+            insert_duplicate_log(
+                original_incident_id=original_incident_id,
+                timestamp=timestamp,
+                **alert
+            )
             return {
                 "status": "Duplicate alert detected",
                 "message": "An alert with similar content already exists.",
-                "incident_id": f"This alert matches an existing incident with ID: {best_match['incident_id']}",
+                "incident_id": f"This alert matches an existing incident with ID: {original_incident_id}",
             }
 
-
-    # No match → new alert
+    # Unique alert → store in cleaned_logs & Weaviate
     new_incident_id = str(uuid.uuid4())[:8]
-    timestamp = datetime.now(timezone.utc)
-
-    # Store in Weaviate
-    weaviate_store(vector, new_incident_id, alert_text)
-
-    # Store in Postgres cleaned_logs
-    insert_cleaned_log(
-        incident_id=new_incident_id,
-        timestamp=timestamp,
-        **alert
-    )
+    insert_cleaned_log(incident_id=new_incident_id, timestamp=timestamp, **alert)
+    weaviate_store(vector, new_incident_id, alert_text, timestamp)
 
     return {
             "status": "New alert created",
