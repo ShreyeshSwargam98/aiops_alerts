@@ -136,3 +136,34 @@ def fetch_grouped_alerts():
         })
 
     return grouped
+
+def get_alert_counts():
+    """Fetch summary counts from cleaned_logs."""
+    conn = get_pg_connection()
+    cur = conn.cursor()
+
+    # Total alerts
+    cur.execute("SELECT COUNT(*) FROM cleaned_logs")
+    total_alerts = cur.fetchone()[0]
+
+    # Total deduplicated alerts (difference between all_logs and cleaned_logs)
+    cur.execute("SELECT (SELECT COUNT(*) FROM all_logs) - (SELECT COUNT(*) FROM cleaned_logs)")
+    total_deduplicated = cur.fetchone()[0]
+
+    # Count by severity/level
+    cur.execute("""
+        SELECT level, COUNT(*) 
+        FROM cleaned_logs
+        GROUP BY level
+    """)
+    severity_counts_rows = cur.fetchall()
+    severity_counts = {row[0]: row[1] for row in severity_counts_rows}
+
+    cur.close()
+    conn.close()
+
+    return {
+        "totalAlertsCount": total_alerts,
+        "totalDeduplicatedCount": total_deduplicated,
+        "severityCounts": severity_counts
+    }

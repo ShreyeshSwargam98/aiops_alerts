@@ -28,3 +28,7 @@ def get_grouped_alerts():
     """
     grouped = fetch_grouped_alerts()
     return grouped
+
+@router.get("/alerts/counts")
+def alert_counts():
+    return get_alert_counts()
