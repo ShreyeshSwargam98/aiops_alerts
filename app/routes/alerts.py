@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, HTTPException
 from app.pydantic_files.alerts import AlertRequest
 from app.services.alert_service import process_alert
 from typing import List, Dict
@@ -40,3 +40,13 @@ def alerts_summary():
     """
     summary = get_alert_summary()
     return summary
+
+@router.get("/alerts/{incident_id}", response_model=Dict)
+def get_alert_detail(incident_id: str):
+    """
+    Get full alert details by incident_id from cleaned_logs.
+    """
+    alert = fetch_alert_by_id(incident_id)
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    return alert

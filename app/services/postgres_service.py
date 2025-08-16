@@ -2,7 +2,6 @@ import psycopg2
 from psycopg2.extras import Json, RealDictCursor
 from dotenv import load_dotenv
 import os
-import json
 
 load_dotenv()
 
@@ -182,3 +181,18 @@ def get_alert_summary():
         "reduction": reduction,
         "severityCounts": counts["severityCounts"]
     }
+    
+def fetch_alert_by_id(incident_id: str):
+    """Fetch single alert by incident_id."""
+    conn = get_pg_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("""
+        SELECT id as incident_id, appName, serviceName, job, label, level, message,
+               kubernetesDetails, date, time
+        FROM cleaned_logs
+        WHERE id = %s
+    """, (incident_id,))
+    alert = cur.fetchone()
+    cur.close()
+    conn.close()
+    return alert

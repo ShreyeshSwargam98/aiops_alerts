@@ -49,7 +49,7 @@ def get_embedding(text: str):
 def insert_duplicate(cur, top_match, row):
     """Insert a duplicate log into duplicate_logs table."""
     (
-        log_id, date, time, appName, serviceName, job, label,
+        date, time, appName, serviceName, job, label,
         level, message, kubernetesDetails
     ) = row
 
@@ -90,7 +90,7 @@ def migrate_logs():
 
             for row in rows:
                 (
-                    log_id, date, time, appName, serviceName, job, label,
+                    date, time, appName, serviceName, job, label,
                     level, message, kubernetesDetails
                 ) = row
 
