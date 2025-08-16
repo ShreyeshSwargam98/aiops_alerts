@@ -32,3 +32,11 @@ def get_grouped_alerts():
 @router.get("/alerts/counts")
 def alert_counts():
     return get_alert_counts()
+
+@router.get("/alerts/summary")
+def alerts_summary():
+    """
+    Returns alert summary for dashboards or monitoring.
+    """
+    summary = get_alert_summary()
+    return summary

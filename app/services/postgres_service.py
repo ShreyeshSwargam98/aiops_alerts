@@ -167,3 +167,18 @@ def get_alert_counts():
         "totalDeduplicatedCount": total_deduplicated,
         "severityCounts": severity_counts
     }
+    
+def get_alert_summary():
+    """Fetch summary for dashboard/health endpoint."""
+    counts = get_alert_counts()  # reuse existing function
+
+    total_alerts = counts["totalAlertsCount"]
+    deduplicated = counts["totalDeduplicatedCount"]
+    reduction = round((deduplicated / total_alerts) * 100, 2) if total_alerts > 0 else 0
+
+    return {
+        "totalAlerts": total_alerts,
+        "deduplicated": deduplicated,
+        "reduction": reduction,
+        "severityCounts": counts["severityCounts"]
+    }
