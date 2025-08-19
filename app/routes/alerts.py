@@ -48,6 +48,11 @@ def alerts_summary():
 def create_chat_message(chat_req: ChatRequest):
     return add_chat_message(chat_req)
 
+@router.get("/alerts/grouped/chat/{incident_id}", response_model=List[ChatResponse])
+def fetch_chat_messages(incident_id: str):
+    return get_chat_messages(incident_id)
+
+
 @router.get("/alerts/{incident_id}", response_model=Dict)
 def get_alert_detail(incident_id: str):
     """

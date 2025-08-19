@@ -58,3 +58,22 @@ def add_chat_message(chat_req: ChatRequest, model: str = "llama3:latest") -> Cha
     conn.close()
 
     return ChatResponse(**saved_row)
+
+def get_chat_messages(incident_id: str) -> list[ChatResponse]:
+    """Fetch all chat history for an incident from Postgres chat_messages table"""
+    conn = get_pg_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute(
+        """
+        SELECT id, incident_id, query, response, timestamp
+        FROM chat_messages
+        WHERE incident_id = %s
+        ORDER BY timestamp ASC
+        """,
+        (incident_id,),
+    )
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return [ChatResponse(**row) for row in rows]
