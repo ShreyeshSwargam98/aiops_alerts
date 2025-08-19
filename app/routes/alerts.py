@@ -1,8 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from app.pydantic_files.alerts import AlertRequest
+from app.pydantic_files.chat_service import *
 from app.services.alert_service import process_alert
 from typing import List, Dict
 from app.services.postgres_service import *
+from app.services.chat_service import *
+
 
 router = APIRouter(tags=["Alerts"])
 
@@ -40,6 +43,10 @@ def alerts_summary():
     """
     summary = get_alert_summary()
     return summary
+
+@router.post("/alerts/grouped/chat", response_model=ChatResponse)
+def create_chat_message(chat_req: ChatRequest):
+    return add_chat_message(chat_req)
 
 @router.get("/alerts/{incident_id}", response_model=Dict)
 def get_alert_detail(incident_id: str):
