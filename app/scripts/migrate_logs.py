@@ -1,5 +1,6 @@
 # Run this script only once. Running it again will create duplicate entries.
-# python -m app.scripts.migrate_logs run this command
+# python -m app.scripts.migrate_logs
+
 import os
 import uuid
 import json
@@ -49,7 +50,7 @@ def get_embedding(text: str):
 def insert_duplicate(cur, top_match, row):
     """Insert a duplicate log into duplicate_logs table."""
     (
-        date, time, appName, serviceName, job, label,
+        log_id, date, time, appName, serviceName, job, label,
         level, message, kubernetesDetails
     ) = row
 
@@ -89,8 +90,9 @@ def migrate_logs():
             rows = cur.fetchall()
 
             for row in rows:
+                # Fix: include 'id' in unpacking
                 (
-                    date, time, appName, serviceName, job, label,
+                    log_id, date, time, appName, serviceName, job, label,
                     level, message, kubernetesDetails
                 ) = row
 
