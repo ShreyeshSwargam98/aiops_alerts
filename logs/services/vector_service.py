@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from app.services.weaviate_client import weaviate_store, weaviate_search
+from logs.services.weaviate_client import weaviate_store, weaviate_search
 import ollama
 
 import ollama

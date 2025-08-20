@@ -1,8 +1,8 @@
 from psycopg2.extras import RealDictCursor
 import ollama
-from app.pydantic_files.chat_service import ChatRequest, ChatResponse
-from app.services.postgres_service import get_pg_connection
-from app.services.prompts import QUERY_PROMPT
+from logs.pydantic_files.chat_service import ChatRequest, ChatResponse
+from logs.services.postgres_service import get_pg_connection
+from logs.services.prompts import QUERY_PROMPT
 
 def add_chat_message(chat_req: ChatRequest, model: str = "llama3:latest") -> ChatResponse:
     # Fetch the row for the given id

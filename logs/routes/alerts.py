@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from app.pydantic_files.alerts import AlertRequest
-from app.pydantic_files.chat_service import *
-from app.services.alert_service import process_alert
+from logs.pydantic_files.alerts import AlertRequest
+from logs.pydantic_files.chat_service import *
+from logs.services.alert_service import process_alert
 from typing import List, Dict
-from app.services.postgres_service import *
-from app.services.chat_service import *
+from logs.services.postgres_service import *
+from logs.services.chat_service import *
 
 
 router = APIRouter(tags=["Alerts"])

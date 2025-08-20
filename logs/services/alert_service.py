@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 import uuid
-from app.services.postgres_service import insert_cleaned_log, insert_duplicate_log
-from app.services.vector_service import get_embedding, weaviate_search, weaviate_store
+from logs.services.postgres_service import insert_cleaned_log, insert_duplicate_log
+from logs.services.vector_service import get_embedding, weaviate_search, weaviate_store
 
 SIMILARITY_THRESHOLD = 0.85
 

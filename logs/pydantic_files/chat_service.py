@@ -1,7 +1,5 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
-
 
 class ChatRequest(BaseModel):
     incident_id: str

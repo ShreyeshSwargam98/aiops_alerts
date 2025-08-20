@@ -11,7 +11,7 @@ import ollama
 import numpy as np
 import warnings
 
-from app.services.weaviate_client import (
+from logs.services.weaviate_client import (
     create_schema,
     weaviate_store,
     weaviate_search,
