@@ -1,5 +1,5 @@
 # Run this script only once. Running it again will create duplicate entries.
-# python -m app.scripts.migrate_logs
+# python -m logs.scripts.migrate_logs
 
 import os
 import uuid
