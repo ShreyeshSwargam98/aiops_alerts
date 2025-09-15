@@ -45,7 +45,7 @@ def process_alert(alert: dict):
             )
             return {
                 "status": "Duplicate alert detected",
-                "message": "An alert with similar content already exists.",
+                "message": "An alert with similar content already exists",
                 "incident_id": f"This alert matches an existing incident with ID: {original_incident_id}",
             }
 
